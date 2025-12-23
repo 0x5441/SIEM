@@ -17,18 +17,34 @@ LOG_FILE = Path("data/logs.jsonl")  # مسار ملف اللوقات
 
 
 def parse_time(x):
-    """تحويل أي صيغة وقت إلى datetime آمن"""
+    """
+    Handle:
+    - /Date(1766420910918)/  (Windows format - milliseconds)
+    - Epoch seconds / milliseconds
+    - ISO string
+    """
     if x is None:
         return None
+
+    # Windows format: /Date(1766420910918)/
+    if isinstance(x, str) and x.startswith("/Date("):
+        try:
+            ms = int(x.replace("/Date(", "").replace(")/", ""))
+            return datetime.fromtimestamp(ms / 1000)
+        except:
+            return None
 
     # Epoch timestamp
     if isinstance(x, (int, float)):
         try:
+            # لو أكبر من 10 أرقام = milliseconds
+            if x > 10_000_000_000:
+                x = x / 1000
             return datetime.fromtimestamp(x)
         except:
             return None
 
-    # ISO string
+    # ISO format
     if isinstance(x, str):
         try:
             return datetime.fromisoformat(x.replace("Z", ""))
