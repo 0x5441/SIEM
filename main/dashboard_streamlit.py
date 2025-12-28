@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 import altair as alt
 
-# ================== CONFIG ==================
+# ================== CONFIG ===================
 st.set_page_config(
     page_title="Mini SIEM Dashboard",
     layout="wide"
